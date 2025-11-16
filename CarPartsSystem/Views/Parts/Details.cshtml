@@ -1,0 +1,140 @@
+@model CarPartsSystem.Models.Part
+@{
+    ViewData["Title"] = Model.PartName;
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Parts" asp-action="Index">Parts</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.PartName</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" class="img-fluid rounded shadow" alt="@Model.PartName" />
+            }
+            else
+            {
+                <div class="bg-secondary rounded shadow d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-cog fa-10x text-white-50"></i>
+                </div>
+            }
+        </div>
+        <div class="col-md-6">
+            <h1 class="display-5">@Model.PartName</h1>
+            <p class="lead text-muted">@Model.Brand</p>
+            
+            <div class="mb-3">
+                <span class="badge bg-info fs-6">@Model.Category</span>
+            </div>
+
+            <h2 class="text-primary mb-4">฿@Model.Price.ToString("N2")</h2>
+
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p>@Model.Description</p>
+            </div>
+
+            <div class="mb-4">
+                <h5>Availability</h5>
+                @if (Model.StockQuantity > 0)
+                {
+                    <span class="badge bg-success fs-6">
+                        <i class="fas fa-check-circle"></i> In Stock (@Model.StockQuantity units)
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                    </span>
+                }
+            </div>
+
+            @if (Model.StockQuantity > 0)
+            {
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" id="quantity" class="form-control" value="1" min="1" max="@Model.StockQuantity" />
+                                </div>
+                                <div class="col-md-8">
+                                    <button type="button" class="btn btn-primary btn-lg w-100 mt-md-4" id="addToCartBtn" data-part-id="@Model.PartId">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Please <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">login</a> to purchase this item.
+                    </div>
+                }
+            }
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Parts
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#addToCartBtn').click(function() {
+                var partId = $(this).data('part-id');
+                var quantity = $('#quantity').val();
+                var button = $(this);
+                
+                button.prop('disabled', true);
+                
+                $.ajax({
+                    url: '/Cart/AddToCart',
+                    type: 'POST',
+                    data: { 
+                        partId: partId, 
+                        quantity: quantity 
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Added to Cart!',
+                            text: quantity + ' item(s) added to your cart.',
+                            showCancelButton: true,
+                            confirmButtonText: 'View Cart',
+                            cancelButtonText: 'Continue Shopping'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/Cart';
+                            }
+                        });
+                        button.prop('disabled', false);
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to add item to cart.',
+                        });
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

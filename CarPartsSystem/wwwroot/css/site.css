@@ -1,5 +1,7 @@
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,15 +10,115 @@ html {
   }
 }
 
+body {
+  margin-bottom: 60px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+/* Dark mode specific styles */
+[data-bs-theme="dark"] {
+  color-scheme: dark;
 }
 
-body {
-  margin-bottom: 60px;
+[data-bs-theme="dark"] .navbar-light {
+  background-color: var(--bs-dark) !important;
+}
+
+/* Card styles */
+.card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+/* Theme toggle button */
+#themeToggle {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Part card styles */
+.part-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Gallery styles */
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+/* Slide carousel */
+.carousel-item img {
+  height: 400px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .carousel-item img {
+    height: 250px;
+  }
+}
+
+/* Admin table styles */
+.table-actions {
+  white-space: nowrap;
+}
+
+.table-actions .btn {
+  margin: 0 2px;
+}
+
+/* Loading spinner */
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Badge styles */
+.badge-status {
+  padding: 0.5em 1em;
+  font-size: 0.875rem;
+}
+
+/* Image preview */
+.image-preview {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
 }

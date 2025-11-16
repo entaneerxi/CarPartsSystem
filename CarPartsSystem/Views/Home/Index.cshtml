@@ -2,7 +2,149 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Carousel -->
+<div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="d-flex align-items-center justify-content-center" style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="text-center text-white">
+                    <i class="fas fa-car fa-5x mb-4"></i>
+                    <h1 class="display-3 fw-bold">Welcome to Car Parts System</h1>
+                    <p class="lead">Your trusted source for quality auto parts</p>
+                    <a asp-controller="Parts" asp-action="Index" class="btn btn-light btn-lg mt-3">
+                        <i class="fas fa-shopping-bag"></i> Browse Parts
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="d-flex align-items-center justify-content-center" style="height: 400px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="text-center text-white">
+                    <i class="fas fa-tags fa-5x mb-4"></i>
+                    <h1 class="display-3 fw-bold">Special Promotions</h1>
+                    <p class="lead">Save big on selected items</p>
+                    <a asp-controller="Promotions" asp-action="Index" class="btn btn-light btn-lg mt-3">
+                        <i class="fas fa-tag"></i> View Promotions
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="d-flex align-items-center justify-content-center" style="height: 400px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="text-center text-white">
+                    <i class="fas fa-tools fa-5x mb-4"></i>
+                    <h1 class="display-3 fw-bold">Quality Guaranteed</h1>
+                    <p class="lead">All parts come with warranty</p>
+                    <a asp-controller="Contact" asp-action="Index" class="btn btn-light btn-lg mt-3">
+                        <i class="fas fa-envelope"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
 </div>
+
+<div class="container">
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-md-12 text-center mb-4">
+            <h2 class="display-5">Why Choose Us?</h2>
+            <p class="lead text-muted">We provide the best service for your car needs</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h4>Quality Parts</h4>
+                    <p>All our parts are sourced from trusted manufacturers and come with quality guarantees.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-shipping-fast fa-4x text-primary mb-3"></i>
+                    <h4>Fast Delivery</h4>
+                    <p>Quick and reliable delivery service to get your parts when you need them.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-headset fa-4x text-info mb-3"></i>
+                    <h4>24/7 Support</h4>
+                    <p>Our customer support team is always ready to help you with any questions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="row mb-5">
+        <div class="col-md-12 text-center mb-4">
+            <h2 class="display-5">Quick Links</h2>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="Parts" asp-action="Index" class="text-decoration-none">
+                <div class="card text-center h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <h5>Browse Parts</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="Promotions" asp-action="Index" class="text-decoration-none">
+                <div class="card text-center h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        <i class="fas fa-tag fa-3x text-danger mb-3"></i>
+                        <h5>Promotions</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="Gallery" asp-action="Index" class="text-decoration-none">
+                <div class="card text-center h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        <i class="fas fa-images fa-3x text-success mb-3"></i>
+                        <h5>Gallery</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="Contact" asp-action="Index" class="text-decoration-none">
+                <div class="card text-center h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        <i class="fas fa-envelope fa-3x text-warning mb-3"></i>
+                        <h5>Contact Us</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
