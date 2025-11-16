@@ -94,6 +94,7 @@
 </div>
 
 @section Scripts {
+    @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {
             $('#addToCartBtn').click(function() {
@@ -108,7 +109,8 @@
                     type: 'POST',
                     data: { 
                         partId: partId, 
-                        quantity: quantity 
+                        quantity: quantity,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                     },
                     success: function(response) {
                         Swal.fire({

@@ -103,6 +103,7 @@
 </div>
 
 @section Scripts {
+    @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {
             $('.add-to-cart').click(function() {
@@ -114,7 +115,11 @@
                 $.ajax({
                     url: '/Cart/AddToCart',
                     type: 'POST',
-                    data: { partId: partId, quantity: 1 },
+                    data: { 
+                        partId: partId, 
+                        quantity: 1,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
