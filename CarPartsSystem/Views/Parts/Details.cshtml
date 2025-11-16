@@ -79,7 +79,7 @@
                 else
                 {
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Please <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">login</a> to purchase this item.
+                        <i class="fas fa-info-circle"></i> Please <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@System.Web.HttpUtility.UrlEncode(Context.Request.Path)">login</a> to purchase this item.
                     </div>
                 }
             }
