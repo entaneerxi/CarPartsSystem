@@ -1,0 +1,195 @@
+@model IEnumerable<CarPartsSystem.Models.Purchase>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-5"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <p class="lead">Welcome to the administration panel</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Parts</h6>
+                            <h2 class="mt-2 mb-0">@ViewBag.TotalParts</h2>
+                        </div>
+                        <i class="fas fa-cogs fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Orders</h6>
+                            <h2 class="mt-2 mb-0">@ViewBag.TotalOrders</h2>
+                        </div>
+                        <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Pending Orders</h6>
+                            <h2 class="mt-2 mb-0">@ViewBag.PendingOrders</h2>
+                        </div>
+                        <i class="fas fa-clock fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Revenue</h6>
+                            <h2 class="mt-2 mb-0">฿@ViewBag.TotalRevenue.ToString("N0")</h2>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3 class="mb-3">Quick Actions</h3>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="AdminParts" asp-action="Index" class="text-decoration-none">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <h5>Manage Parts</h5>
+                        <p class="text-muted small">Add, edit, or remove parts</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="AdminOrders" asp-action="Index" class="text-decoration-none">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-shopping-bag fa-3x text-success mb-3"></i>
+                        <h5>Manage Orders</h5>
+                        <p class="text-muted small">View and process orders</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="AdminPromotions" asp-action="Index" class="text-decoration-none">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-tags fa-3x text-danger mb-3"></i>
+                        <h5>Manage Promotions</h5>
+                        <p class="text-muted small">Create and edit promotions</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a asp-controller="Reports" asp-action="Index" class="text-decoration-none">
+                <div class="card h-100 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                        <h5>Reports</h5>
+                        <p class="text-muted small">View sales and analytics</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-list"></i> Recent Orders</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model)
+                                    {
+                                        <tr>
+                                            <td>#@order.PurchaseId</td>
+                                            <td>@order.User.Email</td>
+                                            <td>@order.PurchaseDate.ToString("MMM dd, yyyy")</td>
+                                            <td>฿@order.TotalAmount.ToString("N2")</td>
+                                            <td>
+                                                @if (order.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning">@order.Status</span>
+                                                }
+                                                else if (order.Status == "Confirmed")
+                                                {
+                                                    <span class="badge bg-info">@order.Status</span>
+                                                }
+                                                else if (order.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">@order.Status</span>
+                                                }
+                                                else if (order.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-danger">@order.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-controller="AdminOrders" asp-action="Details" asp-route-id="@order.PurchaseId" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-controller="AdminOrders" asp-action="Index" class="btn btn-outline-primary">
+                                View All Orders <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No orders yet
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
