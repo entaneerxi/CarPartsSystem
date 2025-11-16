@@ -1,0 +1,207 @@
+@model CarPartsSystem.Models.Purchase
+@{
+    ViewData["Title"] = $"Order #{Model.PurchaseId}";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-file-invoice"></i> Order Details</h1>
+            <p class="text-muted">Order #@Model.PurchaseId</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Order Items -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-box"></i> Order Items</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PurchaseItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.Part.ImagePath))
+                                                {
+                                                    <img src="@item.Part.ImagePath" alt="@item.Part.PartName" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3" />
+                                                }
+                                                <div>
+                                                    <strong>@item.Part.PartName</strong><br />
+                                                    <small class="text-muted">@item.Part.Brand</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>฿@item.UnitPrice.ToString("N2")</td>
+                                        <td>@item.Quantity</td>
+                                        <td><strong>฿@item.Subtotal.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
+                                    <td><strong class="text-primary fs-5">฿@Model.TotalAmount.ToString("N2")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            @if (Model.PaymentTransactions.Any())
+            {
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-credit-card"></i> Payment Information</h4>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var transaction in Model.PaymentTransactions)
+                        {
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Payment Method</dt>
+                                <dd class="col-sm-8">@transaction.PaymentMethod.MethodName</dd>
+
+                                <dt class="col-sm-4">Transaction Reference</dt>
+                                <dd class="col-sm-8">@(transaction.TransactionReference ?? "N/A")</dd>
+
+                                <dt class="col-sm-4">Amount Paid</dt>
+                                <dd class="col-sm-8">฿@transaction.Amount.ToString("N2")</dd>
+
+                                <dt class="col-sm-4">Payment Date</dt>
+                                <dd class="col-sm-8">@transaction.TransactionDate.ToString("MMMM dd, yyyy HH:mm")</dd>
+                            </dl>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <!-- Order Status -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-info-circle"></i> Order Status</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Current Status:</strong><br />
+                        @if (Model.Status == "Pending")
+                        {
+                            <span class="badge bg-warning fs-6">@Model.Status</span>
+                        }
+                        else if (Model.Status == "Confirmed")
+                        {
+                            <span class="badge bg-info fs-6">@Model.Status</span>
+                        }
+                        else if (Model.Status == "Completed")
+                        {
+                            <span class="badge bg-success fs-6">@Model.Status</span>
+                        }
+                        else if (Model.Status == "Cancelled")
+                        {
+                            <span class="badge bg-danger fs-6">@Model.Status</span>
+                        }
+                    </div>
+
+                    <hr />
+
+                    <form asp-action="UpdateStatus" method="post">
+                        <input type="hidden" name="id" value="@Model.PurchaseId" />
+                        <div class="mb-3">
+                            <label class="form-label">Update Status:</label>
+                            <select name="status" class="form-select" required>
+                                <option value="">-- Select Status --</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sync-alt"></i> Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user"></i> Customer</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Name</dt>
+                        <dd class="col-sm-8">@Model.User.FirstName @Model.User.LastName</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.User.Email</dd>
+
+                        <dt class="col-sm-4">Phone</dt>
+                        <dd class="col-sm-8">@Model.User.PhoneNumber</dd>
+
+                        <dt class="col-sm-4">Address</dt>
+                        <dd class="col-sm-8">@Model.User.Address</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Order Timeline -->
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0"><i class="fas fa-history"></i> Timeline</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Created:</strong> @Model.PurchaseDate.ToString("MMM dd, yyyy HH:mm")
+                        </li>
+                        @if (Model.ConfirmedAt.HasValue)
+                        {
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>Confirmed:</strong> @Model.ConfirmedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                            </li>
+                        }
+                        @if (Model.CompletedAt.HasValue)
+                        {
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <strong>Completed:</strong> @Model.CompletedAt.Value.ToString("MMM dd, yyyy HH:mm")
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

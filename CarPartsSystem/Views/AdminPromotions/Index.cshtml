@@ -1,0 +1,115 @@
+@model IEnumerable<CarPartsSystem.Models.Promotion>
+@{
+    ViewData["Title"] = "Manage Promotions";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-tags"></i> Manage Promotions</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Promotion
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Discount</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Min Purchase</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var promotion in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(promotion.ImagePath))
+                                        {
+                                            <img src="@promotion.ImagePath" alt="@promotion.Title" style="width: 50px; height: 50px; object-fit: cover;" class="rounded" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-percentage text-white"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>@promotion.Title</td>
+                                    <td><span class="badge bg-danger">-@promotion.DiscountPercentage%</span></td>
+                                    <td>@promotion.StartDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@promotion.EndDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (promotion.MinimumPurchaseAmount.HasValue)
+                                        {
+                                            <text>฿@promotion.MinimumPurchaseAmount.Value.ToString("N2")</text>
+                                        }
+                                        else
+                                        {
+                                            <text>-</text>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (promotion.IsActive)
+                                        {
+                                            @if (promotion.EndDate >= DateTime.Now)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Expired</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="table-actions">
+                                        <a asp-action="Edit" asp-route-id="@promotion.PromotionId" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@promotion.PromotionId" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h4>No promotions found</h4>
+                    <p>Create your first promotion to get started.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

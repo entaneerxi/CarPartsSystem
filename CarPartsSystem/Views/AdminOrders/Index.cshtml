@@ -1,0 +1,111 @@
+@model IEnumerable<CarPartsSystem.Models.Purchase>
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1><i class="fas fa-shopping-bag"></i> Manage Orders</h1>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <a asp-action="Index" class="btn btn-outline-primary @(string.IsNullOrEmpty(ViewBag.Status) ? "active" : "")">
+                    All
+                </a>
+                <a asp-action="Index" asp-route-status="Pending" class="btn btn-outline-warning @(ViewBag.Status == "Pending" ? "active" : "")">
+                    Pending
+                </a>
+                <a asp-action="Index" asp-route-status="Confirmed" class="btn btn-outline-info @(ViewBag.Status == "Confirmed" ? "active" : "")">
+                    Confirmed
+                </a>
+                <a asp-action="Index" asp-route-status="Completed" class="btn btn-outline-success @(ViewBag.Status == "Completed" ? "active" : "")">
+                    Completed
+                </a>
+                <a asp-action="Index" asp-route-status="Cancelled" class="btn btn-outline-danger @(ViewBag.Status == "Cancelled" ? "active" : "")">
+                    Cancelled
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@order.PurchaseId</strong></td>
+                                    <td>
+                                        @order.User.Email<br />
+                                        <small class="text-muted">@order.User.FirstName @order.User.LastName</small>
+                                    </td>
+                                    <td>
+                                        @order.PurchaseDate.ToString("MMM dd, yyyy")<br />
+                                        <small class="text-muted">@order.PurchaseDate.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>@order.PurchaseItems.Count</td>
+                                    <td>฿@order.TotalAmount.ToString("N2")</td>
+                                    <td>
+                                        @if (order.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning">@order.Status</span>
+                                        }
+                                        else if (order.Status == "Confirmed")
+                                        {
+                                            <span class="badge bg-info">@order.Status</span>
+                                        }
+                                        else if (order.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success">@order.Status</span>
+                                        }
+                                        else if (order.Status == "Cancelled")
+                                        {
+                                            <span class="badge bg-danger">@order.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@order.PurchaseId" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h4>No orders found</h4>
+                    <p>@(string.IsNullOrEmpty(ViewBag.Status) ? "There are no orders yet." : $"There are no {ViewBag.Status} orders.")</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
