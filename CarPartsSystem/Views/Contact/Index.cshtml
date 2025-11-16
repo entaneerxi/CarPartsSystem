@@ -1,0 +1,123 @@
+@model CarPartsSystem.Models.ContactInfo
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4"><i class="fas fa-envelope"></i> Contact Us</h1>
+            <p class="lead">Get in touch with us for inquiries and support</p>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-info-circle"></i> Contact Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="mb-3">@Model.CompanyName</h5>
+                        
+                        @if (!string.IsNullOrEmpty(Model.Address))
+                        {
+                            <div class="mb-3">
+                                <h6><i class="fas fa-map-marker-alt text-primary"></i> Address</h6>
+                                <p>@Model.Address</p>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <div class="mb-3">
+                                <h6><i class="fas fa-phone text-primary"></i> Phone</h6>
+                                <p><a href="tel:@Model.Phone">@Model.Phone</a></p>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <div class="mb-3">
+                                <h6><i class="fas fa-envelope text-primary"></i> Email</h6>
+                                <p><a href="mailto:@Model.Email">@Model.Email</a></p>
+                            </div>
+                        }
+
+                        <div class="mt-4">
+                            <h6 class="mb-3">Connect with us:</h6>
+                            <div class="d-flex gap-3">
+                                @if (!string.IsNullOrEmpty(Model.FacebookUrl))
+                                {
+                                    <a href="@Model.FacebookUrl" target="_blank" class="btn btn-primary">
+                                        <i class="fab fa-facebook fa-2x"></i>
+                                    </a>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.LineId))
+                                {
+                                    <a href="https://line.me/R/ti/p/@Model.LineId" target="_blank" class="btn btn-success">
+                                        <i class="fab fa-line fa-2x"></i>
+                                    </a>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.InstagramUrl))
+                                {
+                                    <a href="@Model.InstagramUrl" target="_blank" class="btn btn-danger">
+                                        <i class="fab fa-instagram fa-2x"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-clock"></i> Business Hours</h4>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Monday - Friday</strong></td>
+                                    <td>9:00 AM - 6:00 PM</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Saturday</strong></td>
+                                    <td>9:00 AM - 5:00 PM</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sunday</strong></td>
+                                    <td>Closed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        @if (!string.IsNullOrEmpty(Model.GoogleMapEmbedUrl))
+                        {
+                            <div class="mt-4">
+                                <h6 class="mb-3">Location Map</h6>
+                                <div class="ratio ratio-16x9">
+                                    <iframe src="@Model.GoogleMapEmbedUrl" 
+                                            style="border:0;" 
+                                            allowfullscreen="" 
+                                            loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>Contact information not available</h4>
+        </div>
+    }
+</div>
