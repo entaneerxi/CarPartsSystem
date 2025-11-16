@@ -1,0 +1,232 @@
+@model IEnumerable<CarPartsSystem.Models.Purchase>
+@{
+    ViewData["Title"] = "Purchase History";
+    var statusFilter = ViewBag.StatusFilter as string;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="fas fa-history"></i> Purchase History</h1>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-0"><i class="fas fa-filter"></i> Filter Orders</h5>
+                </div>
+                <div class="col-md-4">
+                    <div class="btn-group w-100" role="group">
+                        <a asp-controller="User" asp-action="PurchaseHistory" class="btn @(string.IsNullOrEmpty(statusFilter) ? "btn-primary" : "btn-outline-primary")">All</a>
+                        <a asp-controller="User" asp-action="PurchaseHistory" asp-route-status="Pending" class="btn @(statusFilter == "Pending" ? "btn-primary" : "btn-outline-primary")">Pending</a>
+                        <a asp-controller="User" asp-action="PurchaseHistory" asp-route-status="Confirmed" class="btn @(statusFilter == "Confirmed" ? "btn-primary" : "btn-outline-primary")">Confirmed</a>
+                        <a asp-controller="User" asp-action="PurchaseHistory" asp-route-status="Completed" class="btn @(statusFilter == "Completed" ? "btn-primary" : "btn-outline-primary")">Completed</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <!-- Orders List -->
+        @foreach (var purchase in Model)
+        {
+            <div class="card mb-3">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shopping-bag"></i> Order #@purchase.PurchaseId
+                                @if (purchase.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark ms-2">@purchase.Status</span>
+                                }
+                                else if (purchase.Status == "Confirmed")
+                                {
+                                    <span class="badge bg-info ms-2">@purchase.Status</span>
+                                }
+                                else if (purchase.Status == "Completed")
+                                {
+                                    <span class="badge bg-success ms-2">@purchase.Status</span>
+                                }
+                                else if (purchase.Status == "Cancelled")
+                                {
+                                    <span class="badge bg-danger ms-2">@purchase.Status</span>
+                                }
+                            </h5>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> Ordered on: @purchase.PurchaseDate.ToString("dd MMMM yyyy HH:mm")
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h4 class="text-primary mb-0">฿@purchase.TotalAmount.ToString("N2")</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Order Items -->
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in purchase.PurchaseItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Part.ImagePath))
+                                            {
+                                                <img src="@item.Part.ImagePath" style="width: 40px; height: 40px; object-fit: cover;" class="rounded me-2" alt="@item.Part.PartName" />
+                                            }
+                                            <strong>@item.Part.PartName</strong>
+                                            <br />
+                                            <small class="text-muted">@item.Part.Brand</small>
+                                        </td>
+                                        <td>@item.Quantity</td>
+                                        <td>฿@item.UnitPrice.ToString("N2")</td>
+                                        <td><strong>฿@((item.Quantity * item.UnitPrice).ToString("N2"))</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="row mt-3">
+                        <div class="col-md-8">
+                            @if (!string.IsNullOrEmpty(purchase.Notes))
+                            {
+                                <div class="alert alert-secondary mb-0">
+                                    <strong><i class="fas fa-sticky-note"></i> Notes:</strong> @purchase.Notes
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Subtotal:</span>
+                                        <strong>฿@((purchase.TotalAmount - purchase.DiscountAmount).ToString("N2"))</strong>
+                                    </div>
+                                    @if (purchase.DiscountAmount > 0)
+                                    {
+                                        <div class="d-flex justify-content-between mb-2 text-success">
+                                            <span>Discount:</span>
+                                            <strong>-฿@purchase.DiscountAmount.ToString("N2")</strong>
+                                        </div>
+                                    }
+                                    <hr />
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Total:</h6>
+                                        <h6 class="text-primary">฿@purchase.TotalAmount.ToString("N2")</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Timeline -->
+                    @if (purchase.ConfirmedAt.HasValue || purchase.CompletedAt.HasValue)
+                    {
+                        <div class="mt-3">
+                            <hr />
+                            <h6><i class="fas fa-clock"></i> Order Timeline</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success"></i> Ordered: @purchase.PurchaseDate.ToString("dd/MM/yyyy HH:mm")</li>
+                                @if (purchase.ConfirmedAt.HasValue)
+                                {
+                                    <li><i class="fas fa-check-circle text-success"></i> Confirmed: @purchase.ConfirmedAt.Value.ToString("dd/MM/yyyy HH:mm")</li>
+                                }
+                                @if (purchase.CompletedAt.HasValue)
+                                {
+                                    <li><i class="fas fa-check-circle text-success"></i> Completed: @purchase.CompletedAt.Value.ToString("dd/MM/yyyy HH:mm")</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- Payment Information -->
+                    @if (purchase.PaymentTransactions.Any())
+                    {
+                        <div class="mt-3">
+                            <hr />
+                            <h6><i class="fas fa-credit-card"></i> Payment Information</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Payment Method</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var payment in purchase.PaymentTransactions)
+                                        {
+                                            <tr>
+                                                <td>@payment.PaymentMethod?.MethodName</td>
+                                                <td>฿@payment.Amount.ToString("N2")</td>
+                                                <td>@payment.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    @if (payment.Status == "Completed")
+                                                    {
+                                                        <span class="badge bg-success">@payment.Status</span>
+                                                    }
+                                                    else if (payment.Status == "Pending")
+                                                    {
+                                                        <span class="badge bg-warning text-dark">@payment.Status</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">@payment.Status</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-5x text-muted mb-4"></i>
+                <h3>No orders found</h3>
+                @if (!string.IsNullOrEmpty(statusFilter))
+                {
+                    <p class="text-muted">No orders with status "@statusFilter" found.</p>
+                    <a asp-controller="User" asp-action="PurchaseHistory" class="btn btn-primary">
+                        <i class="fas fa-list"></i> View All Orders
+                    </a>
+                }
+                else
+                {
+                    <p class="text-muted">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+                    <a asp-controller="Parts" asp-action="Index" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Browse Parts
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Back to Dashboard -->
+    <div class="mt-4">
+        <a asp-controller="User" asp-action="Dashboard" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
