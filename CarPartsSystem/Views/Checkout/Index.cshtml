@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = "Checkout";
+    var cartItems = ViewBag.CartItems as IEnumerable<CarPartsSystem.Models.CartItem>;
+    var paymentMethods = ViewBag.PaymentMethods as IEnumerable<CarPartsSystem.Models.PaymentMethod>;
+    var subtotal = cartItems?.Sum(item => item.Part.Price * item.Quantity) ?? 0;
+    var tax = subtotal * 0.07m;
+    var total = subtotal + tax;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="fas fa-credit-card"></i> Checkout</h1>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    @if (cartItems != null && cartItems.Any())
+                    {
+                        @foreach (var item in cartItems)
+                        {
+                            <div class="row mb-3 pb-3 border-bottom align-items-center">
+                                <div class="col-md-2">
+                                    @if (!string.IsNullOrEmpty(item.Part.ImagePath))
+                                    {
+                                        <img src="@item.Part.ImagePath" class="img-fluid rounded" alt="@item.Part.PartName" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 60px;">
+                                            <i class="fas fa-cog fa-2x text-white-50"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-5">
+                                    <h6>@item.Part.PartName</h6>
+                                    <p class="text-muted mb-0 small">@item.Part.Brand</p>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <span>Qty: @item.Quantity</span>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <strong>฿@((item.Part.Price * item.Quantity).ToString("N2"))</strong>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ProcessCheckout" method="post" id="checkoutForm">
+                        @Html.AntiForgeryToken()
+                        
+                        @if (paymentMethods != null && paymentMethods.Any())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Select Payment Method <span class="text-danger">*</span></label>
+                                @foreach (var method in paymentMethods)
+                                {
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="paymentMethodId" 
+                                               id="payment_@method.PaymentMethodId" value="@method.PaymentMethodId" required>
+                                        <label class="form-check-label" for="payment_@method.PaymentMethodId">
+                                            @if (!string.IsNullOrEmpty(method.IconPath))
+                                            {
+                                                <img src="@method.IconPath" alt="@method.MethodName" style="height: 30px; margin-right: 10px;" />
+                                            }
+                                            <strong>@method.MethodName</strong>
+                                            @if (!string.IsNullOrEmpty(method.Description))
+                                            {
+                                                <br />
+                                                <small class="text-muted">@method.Description</small>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> No payment methods are currently available. Please contact support.
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Order Notes (Optional)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="Add any special instructions or notes for your order..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Cart
+                            </a>
+                            @if (paymentMethods != null && paymentMethods.Any())
+                            {
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-check"></i> Place Order
+                                </button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Price Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>฿@subtotal.ToString("N2")</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (7%):</span>
+                        <strong>฿@tax.ToString("N2")</strong>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>Total:</h5>
+                        <h5 class="text-primary">฿@total.ToString("N2")</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="fas fa-shield-alt text-success"></i> Secure Checkout</h6>
+                    <p class="small text-muted mb-2">Your payment information is secure and encrypted.</p>
+                    <h6><i class="fas fa-truck text-info"></i> Fast Delivery</h6>
+                    <p class="small text-muted mb-0">We'll process your order as soon as possible.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#checkoutForm').submit(function(e) {
+                var paymentSelected = $('input[name="paymentMethodId"]:checked').length > 0;
+                if (!paymentSelected) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Payment Method Required',
+                        text: 'Please select a payment method to proceed.'
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,120 @@
+@model CarPartsSystem.Models.Purchase
+@{
+    ViewData["Title"] = "Order Confirmation";
+    var subtotal = Model.PurchaseItems.Sum(pi => pi.Subtotal);
+    var tax = Model.TotalAmount - subtotal;
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <div class="mb-3">
+            <i class="fas fa-check-circle fa-5x text-success"></i>
+        </div>
+        <h1 class="text-success">Order Placed Successfully!</h1>
+        <p class="lead">Thank you for your purchase. Your order has been received and is being processed.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Order Number:</strong> #@Model.PurchaseId</p>
+                            <p><strong>Order Date:</strong> @Model.PurchaseDate.ToString("MMM dd, yyyy hh:mm tt")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> <span class="badge bg-warning">@Model.Status</span></p>
+                            <p><strong>Total Amount:</strong> <span class="text-primary fw-bold">฿@Model.TotalAmount.ToString("N2")</span></p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mb-3">
+                            <p><strong>Order Notes:</strong></p>
+                            <p class="text-muted">@Model.Notes</p>
+                        </div>
+                    }
+
+                    <h6 class="mt-4 mb-3">Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Part Name</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PurchaseItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.Part.PartName</strong><br />
+                                            <small class="text-muted">@item.Part.Brand</small>
+                                        </td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">฿@item.UnitPrice.ToString("N2")</td>
+                                        <td class="text-end">฿@item.Subtotal.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td class="text-end">฿@subtotal.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Tax (7%):</strong></td>
+                                    <td class="text-end">฿@tax.ToString("N2")</td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>฿@Model.TotalAmount.ToString("N2")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    @if (Model.PaymentTransactions.Any())
+                    {
+                        var payment = Model.PaymentTransactions.First();
+                        <h6 class="mt-4 mb-3">Payment Information</h6>
+                        <div class="alert alert-info">
+                            <p class="mb-2"><strong>Payment Method:</strong> @payment.PaymentMethod.MethodName</p>
+                            <p class="mb-2"><strong>Transaction Reference:</strong> @payment.TransactionReference</p>
+                            <p class="mb-0"><strong>Payment Status:</strong> <span class="badge bg-warning">@payment.Status</span></p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6><i class="fas fa-info-circle text-primary"></i> What's Next?</h6>
+                    <ul class="mb-0">
+                        <li>Your order is being processed by our team</li>
+                        <li>You will receive updates about your order status</li>
+                        <li>You can track your order in your Purchase History</li>
+                        <li>If you have any questions, please contact our support team</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a asp-controller="User" asp-action="PurchaseHistory" class="btn btn-primary me-2">
+                    <i class="fas fa-history"></i> View Purchase History
+                </a>
+                <a asp-controller="Parts" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-shopping-bag"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
